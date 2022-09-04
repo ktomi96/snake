@@ -2,9 +2,17 @@ import tkinter as tk
 import random
 import numpy as np
 
+
+###################################################
+#Global variables##################################
 shape = (10, 4)
+
 snake_array = np.zeros(shape, dtype=np.int8)
-#print(snake_array)
+future_snake_array = np.zeros(shape, dtype=np.int8)
+#print(future_snake_array)
+
+num_eaten = 0
+
 
 w = 600
 h = 400
@@ -12,7 +20,7 @@ x = w//2
 y = h//2
 
 direct = [0, 0]
-
+###########################################################
 def random_x(w):
     return random.randint(1, (w - 1))
 
@@ -66,13 +74,20 @@ def food_gen():
     
 
 def collison():
+    global num_eaten
     chr_cord = canvas.coords(chr)
     item_cord = canvas.coords(food)
 
     coll = list(canvas.find_overlapping(chr_cord[0], chr_cord[1], chr_cord[2], chr_cord[3]))
     coll.remove(chr)
-    if len(coll) != 0:
-        print('hit')
+    item_coll = list(canvas.find_overlapping(item_cord[0], item_cord[1], item_cord[2], item_cord[3]))
+    item_coll.remove(food)
+
+    if len(coll) != 0 and len(item_coll) != 0:
+        #print('hit')
+        num_eaten += 1
+        #print(num_eaten)
+        creat_parts()
         return True
 
 def collision_event(val:bool):
@@ -100,6 +115,13 @@ def outbound_event():
         canvas.delete(chr)
         chr = init_chr()
 
+def creat_parts():
+    global num_eaten
+    chr_cord = canvas.coords(chr)
+    num_eaten = canvas.create_oval(chr_cord[0], chr_cord[1], chr_cord[0] + 10, chr_cord[1] + 10)
+
+
+    
 def main_loop():
     is_collision = collison()
     collision_event(is_collision)
